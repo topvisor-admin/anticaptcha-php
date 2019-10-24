@@ -52,30 +52,30 @@ class Anticaptcha {
             "clientKey" =>  $this->clientKey,
             "taskId"    =>  $this->taskId
         );
-        if ($currentSecond == 0) {
-            $this->debout("waiting 5 seconds..");
-            sleep(3);
-        } else {
-            sleep(1);
-        }
+
+        $sleepSeconds = 1;
+        if ($currentSecond == 0) $sleepSeconds = 3;
+        
+        $this->debout("waiting $sleepSeconds seconds..");
+        sleep($sleepSeconds);
+
         $this->debout("requesting task status");
         $postResult = $this->jsonPostRequest("getTaskResult", $postData);
-        
+
         if ($postResult == false) {
             $this->debout("API error", "red");
             return false;
         }
-        
+
         $this->taskInfo = $postResult;
-        
-        
+
         if ($this->taskInfo->errorId == 0) {
             if ($this->taskInfo->status == "processing") {
-                
+
                 $this->debout("task is still processing");
                 //repeating attempt
-                return $this->waitForResult($maxSeconds, $currentSecond+1);
-                
+                return $this->waitForResult($maxSeconds, $currentSecond + $sleepSeconds);
+
             }
             if ($this->taskInfo->status == "ready") {
                 $this->debout("task is complete", "green");
@@ -83,14 +83,14 @@ class Anticaptcha {
             }
             $this->setErrorMessage("unknown API status, update your software");
             return false;
-            
+
         } else {
             $this->debout("API error {$this->taskInfo->errorCode} : {$this->taskInfo->errorDescription}", "red");
             $this->setErrorMessage($this->taskInfo->errorDescription);
             return false;
         }
     }
-    
+
     public function getBalance() {
         $postData = array(
             "clientKey" =>  $this->clientKey

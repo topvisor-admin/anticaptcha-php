@@ -39,7 +39,7 @@ class Anticaptcha{
             return true;
         }else{
             $this->debout("API error {$submitResult->errorCode} : {$submitResult->errorDescription}", "red");
-            $this->setErrorMessage($submitResult->errorDescription);
+            $this->setErrorMessage($submitResult->errorCode.' '.$submitResult->errorDescription);
             return false;
         }
     }
@@ -77,7 +77,7 @@ class Anticaptcha{
             return false;
         }else{
             $this->debout("API error {$this->taskInfo->errorCode} : {$this->taskInfo->errorDescription}", "red");
-            $this->setErrorMessage($this->taskInfo->errorDescription);
+            $this->setErrorMessage($this->taskInfo->errorCode.' '.$this->taskInfo->errorDescription);
             return false;
         }
     }
